@@ -13,6 +13,12 @@ def scrape_opengraph_metadata(url):
     meta_tags = soup.find_all("meta", property=lambda prop: prop.startswith("og:"))
     
 
+    if meta_tags:
+        for tag in meta_tags:
+            property_name = tag["property"][3:]
+            property_value = tag["content"]
+            og_properties[property_name] = property_value
+
     return og_properties
 
 class handler(BaseHTTPRequestHandler):
