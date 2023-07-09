@@ -8,16 +8,20 @@ def scrape_opengraph_metadata(url):
     html_content = response.text
     soup = BeautifulSoup(html_content, "html.parser")
 
-
     og_properties = {}
-    meta_tags = soup.find_all("meta", property=lambda prop: prop.startswith("og:"))
-    
 
-    if meta_tags:
-        for tag in meta_tags:
-            property_name = tag["property"][3:]
-            property_value = tag["content"]
-            og_properties[property_name] = property_value
+    og_title_tag = soup.find("meta", property="og:title")
+    if og_title_tag:
+        og_properties["title"] = og_title_tag["content"]
+
+    og_description_tag = soup.find("meta", property="og:description")
+    if og_description_tag:
+        og_properties["description"] = og_description_tag["content"]
+
+    og_image_tag = soup.find("meta", property="og:image")
+    if og_image_tag:
+        og_properties["image"] = og_image_tag["content"]
+
 
     return og_properties
 
