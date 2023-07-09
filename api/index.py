@@ -8,18 +8,21 @@ def scrape_opengraph_metadata(url):
     html_content = response.text
     soup = BeautifulSoup(html_content, "html.parser")
 
-    # Extract OpenGraph metadata
-    og_title = soup.find("meta", property="og:title")["content"]
-    og_description = soup.find("meta", property="og:description")["content"]
-    og_image = soup.find("meta", property="og:image")["content"]
-    # ...
+    og_properties = {}
 
-    return {
-        "title": og_title,
-        "description": og_description,
-        "image": og_image,
-        # Include additional metadata as needed
-    }
+    og_title_tag = soup.find("meta", property="og:title")
+    if og_title_tag:
+        og_properties["title"] = og_title_tag["content"]
+
+    og_description_tag = soup.find("meta", property="og:description")
+    if og_description_tag:
+        og_properties["description"] = og_description_tag["content"]
+
+    og_image_tag = soup.find("meta", property="og:image")
+    if og_image_tag:
+        og_properties["image"] = og_image_tag["content"]
+
+    return og_properties
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -27,8 +30,11 @@ class handler(BaseHTTPRequestHandler):
         query_params = dict(parse.parse_qsl(parsed_url))
 
         if "url" in query_params:
-            opengraph_data = scrape_opengraph_metadata(query_params["url"])
-            response_message = str(opengraph_data)
+            try:
+                opengraph_data = scrape_opengraph_metadata(query_params["url"])
+                response_message = str(opengraph_data)
+            except Exception as e:
+                response_message = "Error occurred while retrieving OpenGraph metadata: " + str(e)
         else:
             response_message = "Please provide a 'url' query parameter."
 
@@ -36,4 +42,3 @@ class handler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/plain")
         self.end_headers()
         self.wfile.write(response_message.encode())
-
