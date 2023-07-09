@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from http.server import BaseHTTPRequestHandler
+from urllib import parse
 
 def scrape_opengraph_metadata(url):
     response = requests.get(url)
