@@ -8,15 +8,18 @@ def scrape_opengraph_metadata(url):
     html_content = response.text
     soup = BeautifulSoup(html_content, "html.parser")
 
-    og_properties = {}
-    meta_tags = soup.find_all("meta", property=lambda prop: prop.startswith("og:"))
-    
-    for tag in meta_tags:
-        property_name = tag["property"][3:]
-        property_value = tag["content"]
-        og_properties[property_name] = property_value
+    # Extract OpenGraph metadata
+    og_title = soup.find("meta", property="og:title")["content"]
+    og_description = soup.find("meta", property="og:description")["content"]
+    og_image = soup.find("meta", property="og:image")["content"]
+    # ...
 
-    return og_properties
+    return {
+        "title": og_title,
+        "description": og_description,
+        "image": og_image,
+        # Include additional metadata as needed
+    }
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -33,3 +36,4 @@ class handler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/plain")
         self.end_headers()
         self.wfile.write(response_message.encode())
+
