@@ -24,5 +24,4 @@ def main():
     opengraph_data = scrape_opengraph_metadata(url)
     print(opengraph_data)
 
-if __name__ == "__main__":
-    main()
+main()
